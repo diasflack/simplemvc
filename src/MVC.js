@@ -5,16 +5,64 @@
     var global = global;
     var MVC = global.MVC || {};
 
-    MVC.Model = function(object) {
 
-        for (var property in object) {
-            this[property] = object[property];
+    MVC.PubSub = (function() {
+
+        var events = {};
+        var hOp = events.hasOwnProperty;
+
+        return {
+            subscribe: function(event, listener) {
+
+                if (!hOp.call(events, event)) {
+                    events[event] = [];
+                }
+
+                var index = events[event].push(listener) - 1;
+
+                return {
+                    remove: function() {
+                        delete events[event][index];
+                    }
+                }
+
+            },
+
+            publish: function(event, info) {
+                if(!hOp.call(events, event)) {
+                    return;
+                }
+
+                events[event].forEach(function(item) {
+                    item(info != undefined ? info : {});
+                });
+            }
+
+        }
+
+    })();
+
+    MVC.Model = function(ModelMap) {
+
+        for (var property in ModelMap) {
+            this[property] = ModelMap[property];
             Object.defineProperty(this, property, {configurable:false})
         }
 
         var model = this;
 
-        function modelConstructor() {
+        function modelConstructor(ModelValues) {
+
+            for (var property in ModelValues) {
+                if (model.hasOwnProperty(property)) {
+                    model[property] = ModelValues[property];
+                }
+            }
+
+            Object.preventExtensions(model);
+
+            MVC.PubSub.publish("modelCreated", model);
+
             return model;
         }
 
@@ -22,7 +70,12 @@
     };
 
     MVC.ModelList = function(models) {
-        this.models = models;
+        var that = this;
+        that.models = models || [];
+
+        MVC.PubSub.subscribe("modelCreated", function(model) {
+            that.addModel(model);
+        });
 
     };
 
