@@ -36,42 +36,53 @@ describe("MVC", function() {
 
         describe("Basic model function", function() {
 
+            it("can create Models with various properties", function() {
+                expect(new ItemModel().name).toEqual("exampleName");
+                expect(new ItemModel().category).toEqual("exampleCategory");
+                expect(new ItemModel().gramms).toEqual(0);
+            });
 
+            it("can create instances and can`t delete properties", function (){
+                var item1 = new ItemModel();
 
-        it("can create Models with various properties", function() {
-            expect(ItemModel().name).toEqual("exampleName");
-            expect(ItemModel().category).toEqual("exampleCategory");
-            expect(ItemModel().gramms).toEqual(0);
-        });
+                item1.name = "item1";
 
-        it("can create instances and can`t delete properties", function (){
-            var item1 = new ItemModel();
+                expect(item1.name).toEqual("item1");
+                expect(item1.category).toEqual("exampleCategory");
+                expect(item1.gramms).toEqual(0);
 
-            item1.name = "item1";
+                expect(delete item1.name).toBe(false);
 
-            expect(item1.name).toEqual("item1");
-            expect(item1.category).toEqual("exampleCategory");
-            expect(item1.gramms).toEqual(0);
+            });
 
-            expect(delete item1.name).toBe(false);
+            it("can't extense, add new properties", function() {
+                var nonExtenseItem = new ItemModel();
 
-        });
+                nonExtenseItem.newProperty = "newValue";
 
-        it("can't extense, add new properties", function() {
-            var nonExtenseItem = new ItemModel();
+                expect(nonExtenseItem.newProperty).not.toBeDefined();
 
-            nonExtenseItem.newProperty = "newValue";
+            });
 
-            expect(nonExtenseItem.newProperty).not.toBeDefined();
+            it("various model constructors creates various instances", function() {
+                var NewItemModel = new MVC.Model({name:"notItemModel"});
 
-        });
+                var item1 = new ItemModel();
+                var item2 = new NewItemModel();
+
+                expect(item1 instanceof ItemModel).toBeTruthy();
+                expect(item1 instanceof NewItemModel).toBeFalsy();
+                expect(item2 instanceof NewItemModel).toBeTruthy();
+                expect(item2 instanceof ItemModel).toBeFalsy();
+
+            });
 
         });
 
         describe("Model Lists", function() {
 
             it("Model list update through model creation", function(){
-                var itemModelsList = new MVC.ModelList();
+                var itemModelsList = new MVC.ModelList(ItemModel);
 
                 var item2 = new ItemModel({
                     name:"item2",

@@ -44,37 +44,46 @@
 
     MVC.Model = function(ModelMap) {
 
-        for (var property in ModelMap) {
-            this[property] = ModelMap[property];
-            Object.defineProperty(this, property, {configurable:false})
-        }
+        return function() {
 
-        var model = this;
+            var that = this;
 
-        function modelConstructor(ModelValues) {
+            for (var property in ModelMap) {
 
-            for (var property in ModelValues) {
-                if (model.hasOwnProperty(property)) {
-                    model[property] = ModelValues[property];
-                }
+                var privateProperty = "_"+property;
+
+                that[privateProperty] = ModelMap[property];
+
+                Object.defineProperty(that, property, {
+                    get: function() {
+                        console.log(that, property);
+                        return that[privateProperty];
+                    },
+                    set: function (val) {
+                        if (typeof that[privateProperty] === typeof val ) {
+                            that[privateProperty] = val;
+                        } else {
+                            console.error("Wrong type of %s! Must be %s - but got %s", property, typeof that[privateProperty], typeof val);
+                        }
+                    },
+                    configurable: false});
             }
 
-            Object.preventExtensions(model);
+            Object.preventExtensions(that);
+            MVC.PubSub.publish("modelCreated", that);
 
-            MVC.PubSub.publish("modelCreated", model);
-
-            return model;
-        }
-
-        return modelConstructor;
+        };
     };
 
-    MVC.ModelList = function(models) {
+    MVC.ModelList = function(ModelConstructor) {
         var that = this;
-        that.models = models || [];
+        that.modelConstructor = ModelConstructor || [];
+        that.models = [];
 
         MVC.PubSub.subscribe("modelCreated", function(model) {
-            that.addModel(model);
+            if(model instanceof that.modelConstructor) {
+                that.addModel(model);
+            }
         });
 
     };
