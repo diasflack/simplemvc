@@ -51,21 +51,25 @@
             for (var property in ModelMap) {
 
                 var privateProperty = "_"+property;
-
                 that[privateProperty] = ModelMap[property];
 
                 Object.defineProperty(that, property, {
-                    get: function() {
-                        console.log(that, property);
-                        return that[privateProperty];
-                    },
-                    set: function (val) {
-                        if (typeof that[privateProperty] === typeof val ) {
-                            that[privateProperty] = val;
-                        } else {
-                            console.error("Wrong type of %s! Must be %s - but got %s", property, typeof that[privateProperty], typeof val);
-                        }
-                    },
+                    get: function(privateProperty) {
+                        return function() {
+                            return that[privateProperty];
+                        };
+                    }(privateProperty),
+
+                    set: function (privateProperty) {
+                        return function(val) {
+                            if (typeof that[privateProperty] === typeof val) {
+                                that[privateProperty] = val;
+                            } else {
+                                console.error("Wrong type of %s! Must be %s - but got %s", property, typeof that[privateProperty], typeof val);
+                            }
+                        };
+                    }(privateProperty),
+
                     configurable: false});
             }
 
