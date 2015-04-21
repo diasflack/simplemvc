@@ -97,6 +97,67 @@ describe("MVC", function() {
 
     });
 
+    describe("View", function(){
+        var settings, model, template, parent;
+
+        beforeAll(function() {
+            var properties = {name:"exampleName", category:"exampleCategory", gramms:0};
+            var ItemModel = new MVC.Model(properties);
+            model = new ItemModel();
+
+            template = "<h1></h1>";
+            parent = document.getElementsByTagName("body")[0];
+
+            settings = {
+                model: model,
+                template: template,
+                parent: parent
+            }
+        });
+
+        it("Must create view with basic settings", function(){
+            var itemView = new MVC.View(settings);
+
+            expect(itemView).toBeDefined();
+            expect(itemView.model).toEqual(model);
+            expect(itemView.template).toEqual(template);
+            expect(itemView.parent).toEqual(parent);
+        });
+
+        describe("View initializing errors", function(){
+
+            it("Must throw model error", function() {
+
+                expect(function() {new MVC.View({template: template, parent: parent})}).toThrow();
+
+            });
+
+            it("Must throw template error", function() {
+
+                expect(function() {new MVC.View({model:model, parent: parent})}).toThrow();
+
+            });
+
+            it("Must throw parent error", function() {
+
+                expect(function() {new MVC.View({model:model, template: template})}).toThrow();
+
+            });
+
+        });
+
+        describe("View render functions", function() {
+            it("must have render function", function() {
+                var itemView = new MVC.View(settings);
+
+                console.log(itemView);
+
+                expect(itemView.render).toBeDefined();
+            });
+        });
+
+    });
+
 
 
 

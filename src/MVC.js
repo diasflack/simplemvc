@@ -3,6 +3,8 @@
     "use strict";
 
     var global = global;
+
+    /** @namespace MVC */
     var MVC = global.MVC || {};
 
 
@@ -98,6 +100,48 @@
 
     MVC.ModelList.prototype.getModels = function() {
         return this.models;
+    };
+
+    MVC.Controller = function(model, view) {
+
+    };
+
+    /**
+     *
+     * MVC View
+     *
+     * @param {object} settings
+     * @param settings.model - model that must be reprisented
+     * @param settings.template - html string for view
+     * @param settings.parent - DOM element that must be attached
+     *
+     * @constructor
+     * @memberof MVC
+     */
+    MVC.View = function(settings) {
+        if (!settings.model) {
+            console.error("Model must be defined!");
+            throw new Error("Model must be defined!");
+        }
+
+        if (!settings.template) {
+            console.error("Template must be defined!");
+            throw new Error("Template must be defined!");
+        }
+
+        if (!settings.parent) {
+            console.error("Parent must be defined!");
+            throw new Error("Parent must be defined!");
+        }
+
+        this.model = settings.model;
+        this.template = settings.template;
+        this.parent = settings.parent;
+
+    };
+
+    MVC.View.prototype.render = function(){
+        console.log(this);
     };
 
     global.MVC = MVC;
