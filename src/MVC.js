@@ -63,11 +63,17 @@
                     }(privateProperty),
 
                     set: function (privateProperty) {
+                        var typeOfVal, typeOfProperty;
                         return function(val) {
-                            if (typeof that[privateProperty] === typeof val) {
+
+                            typeOfProperty = Array.isArray(that[privateProperty]) ? "Array" : typeof that[privateProperty];
+                            typeOfVal = Array.isArray(val) ? "Array" : typeof val;
+
+                            if (typeOfProperty === typeOfVal) {
                                 that[privateProperty] = val;
                             } else {
-                                console.error("Wrong type of %s! Must be %s - but got %s", property, typeof that[privateProperty], typeof val);
+                                throw new Error("Wrong type! Must be "+ typeOfProperty +" - but got "+ typeOfVal);
+                                console.error("Wrong type! Must be %s - but got %s", typeOfProperty, typeOfVal);
                             }
                         };
                     }(privateProperty),

@@ -30,28 +30,37 @@ describe("MVC", function() {
         var properties, ItemModel;
 
         beforeAll(function() {
-          properties = {name:"exampleName", category:"exampleCategory", gramms:0}
+          properties = {string:"string", number:0, array:[1,2,3], object:{a:1}, func: function(){return "This is function"} };
           ItemModel = new MVC.Model(properties);
         });
 
-        describe("Basic model function", function() {
+        describe("Basic model characteristic", function() {
 
-            it("can create Models with various properties", function() {
-                expect(new ItemModel().name).toEqual("exampleName");
-                expect(new ItemModel().category).toEqual("exampleCategory");
-                expect(new ItemModel().gramms).toEqual(0);
+            it("can create Models with specified properties", function() {
+                var model = new ItemModel();
+
+                expect(model.string).toEqual("string");
+                expect(model.number).toEqual(0);
+                expect(model.array).toEqual([1,2,3]);
+                expect(model.object.a).toEqual(1);
+                expect(model.func()).toEqual("This is function");
+
             });
 
-            it("can create instances and can`t delete properties", function (){
+            it("properties are strong typed", function (){
+                var item = new ItemModel();
+
+                expect(function(){item.string = 0}).toThrowError("Wrong type! Must be string - but got number");
+                expect(function(){item.number = [1,2,3]}).toThrowError("Wrong type! Must be number - but got Array");
+                expect(function(){item.array = {a:1,b:2,c:3}}).toThrowError("Wrong type! Must be Array - but got object");
+                expect(function(){item.object = [1,2,3]}).toThrowError("Wrong type! Must be object - but got Array");
+                expect(function(){item.func = [1,2,3]}).toThrowError("Wrong type! Must be function - but got Array");
+            });
+
+            it("properties not deletable", function (){
                 var item1 = new ItemModel();
 
-                item1.name = "item1";
-
-                expect(item1.name).toEqual("item1");
-                expect(item1.category).toEqual("exampleCategory");
-                expect(item1.gramms).toEqual(0);
-
-                expect(delete item1.name).toBe(false);
+                expect(delete item1.string).toBe(false);
 
             });
 
