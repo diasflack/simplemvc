@@ -107,61 +107,80 @@ describe("MVC", function() {
     });
 
     describe("View", function(){
-        var settings, model, template, parent;
+        var settings, model, template, element;
 
         beforeAll(function() {
-            var properties = {name:"exampleName", category:"exampleCategory", gramms:0};
-            var ItemModel = new MVC.Model(properties);
+            var properties, ItemModel, div;
+
+            properties = {string:"string", number:0, array:[1,2,3], object:{a:1}, func: function(){return "This is function"} };
+            ItemModel = new MVC.Model(properties);
+
             model = new ItemModel();
 
-            template = "<h1></h1>";
-            parent = document.getElementsByTagName("body")[0];
+            div = document.createElement("div");
+            div.setAttribute("id","someid");
+            div.innerHTML = "<p>%%number%%</p>";
+            document.body.appendChild(div);
+
+            element = document.getElementById("someid");
+
+            template = "<h1>%% string %%</h1>";
 
             settings = {
                 model: model,
-                template: template,
-                parent: parent
+                element: "someid",
+                template: template
             }
         });
 
-        it("Must create view with basic settings", function(){
+        it("must create view with basic settings", function(){
             var itemView = new MVC.View(settings);
 
             expect(itemView).toBeDefined();
             expect(itemView.model).toEqual(model);
+            expect(itemView.element).toEqual(element);
             expect(itemView.template).toEqual(template);
-            expect(itemView.parent).toEqual(parent);
         });
 
-        describe("View initializing errors", function(){
+        it("must use innerHTML if template is not defined", function() {
+            var itemView = new MVC.View({model:model,element:"someid"});
 
-            it("Must throw model error", function() {
+            expect(itemView.template).toEqual("<p>%%number%%</p>");
+        });
 
-                expect(function() {new MVC.View({template: template, parent: parent})}).toThrow();
+        describe("View initialize errors", function(){
+
+            it("must throw model error", function() {
+
+                expect(function() {new MVC.View({element: "someid"})}).toThrow();
 
             });
 
-            it("Must throw template error", function() {
+            it("must throw element error", function() {
 
-                expect(function() {new MVC.View({model:model, parent: parent})}).toThrow();
-
-            });
-
-            it("Must throw parent error", function() {
-
-                expect(function() {new MVC.View({model:model, template: template})}).toThrow();
+                expect(function() {new MVC.View({model:model})}).toThrow();
 
             });
 
         });
 
         describe("View render functions", function() {
+            var itemView;
+
+            beforeEach(function() {
+                itemView = new MVC.View(settings);
+            });
+
             it("must have render function", function() {
-                var itemView = new MVC.View(settings);
-
-                console.log(itemView);
-
                 expect(itemView.render).toBeDefined();
+            });
+
+            it("must represent model values", function(){
+
+            });
+
+            it("must react on model changes", function(){
+
             });
         });
 

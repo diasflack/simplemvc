@@ -1,1 +1,3 @@
-# simplemvc
+# strongJS
+
+Simple MVC framework with strong typization. Development in process...

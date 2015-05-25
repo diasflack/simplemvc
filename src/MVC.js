@@ -73,7 +73,6 @@
                                 that[privateProperty] = val;
                             } else {
                                 throw new Error("Wrong type! Must be "+ typeOfProperty +" - but got "+ typeOfVal);
-                                console.error("Wrong type! Must be %s - but got %s", typeOfProperty, typeOfVal);
                             }
                         };
                     }(privateProperty),
@@ -117,32 +116,24 @@
      * MVC View
      *
      * @param {object} settings
-     * @param settings.model - model that must be reprisented
-     * @param settings.template - html string for view
-     * @param settings.parent - DOM element that must be attached
+     * @param settings.model - model that must be represented
+     * @param settings.element - ID of DOM element
      *
      * @constructor
      * @memberof MVC
      */
     MVC.View = function(settings) {
         if (!settings.model) {
-            console.error("Model must be defined!");
             throw new Error("Model must be defined!");
         }
 
-        if (!settings.template) {
-            console.error("Template must be defined!");
-            throw new Error("Template must be defined!");
-        }
-
-        if (!settings.parent) {
-            console.error("Parent must be defined!");
-            throw new Error("Parent must be defined!");
+        if (!settings.element) {
+            throw new Error("Element must be defined!");
         }
 
         this.model = settings.model;
-        this.template = settings.template;
-        this.parent = settings.parent;
+        this.element = document.getElementById(settings.element);
+        this.template = settings.template ? settings.template : this.element.innerHTML;
 
     };
 
